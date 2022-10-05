@@ -1,0 +1,275 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2022-10-05T02:20:01.141Z",
+    "__export_source": "insomnia.desktop.app:v2022.6.0",
+    "resources": [
+        {
+            "_id": "req_20dc0676ad5f4b88a288b99cea885d53",
+            "parentId": "fld_be02f746445e46d199cb98ad9654d89a",
+            "modified": 1664936323122,
+            "created": 1664931624635,
+            "url": "http://localhost:8001/api/users/",
+            "name": "View Users",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [],
+            "authentication": {
+                "type": "bearer",
+                "token": ""
+            },
+            "metaSortKey": -1664936247288.5,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_be02f746445e46d199cb98ad9654d89a",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664936319067,
+            "created": 1664936319067,
+            "name": "Users",
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1664936319067,
+            "_type": "request_group"
+        },
+        {
+            "_id": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "parentId": null,
+            "modified": 1664747032502,
+            "created": 1664747032502,
+            "name": "New Document",
+            "description": "",
+            "scope": "design",
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_f9eb32a91a3942bdb8cd164d8b5944f5",
+            "parentId": "fld_be02f746445e46d199cb98ad9654d89a",
+            "modified": 1664936332179,
+            "created": 1664747400275,
+            "url": "http://localhost:8001/api/users/",
+            "name": "Registration",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"username\": \"cryptohasbik\",\n\t\"password\": \"magomedov\",\n\t\"alias\": \"cryptohasbulla\",\n\t\"email\": \"hello_from_hasbik@mail.ru\",\n\t\"is_staff\": true\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json",
+                    "id": "pair_a77dcb6d816042559f532e3c5f7d9371"
+                }
+            ],
+            "authentication": {
+                "type": "bearer",
+                "token": "",
+                "prefix": "",
+                "disabled": true
+            },
+            "metaSortKey": -1664936247238.5,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_84f5281e8aab4b4fbeab646c920cab0f",
+            "parentId": "fld_be02f746445e46d199cb98ad9654d89a",
+            "modified": 1664936336305,
+            "created": 1664932724509,
+            "url": "http://localhost:8001/api/users/b466192a-85a3-4171-b516-12293f471eb6",
+            "name": "Delete User",
+            "description": "",
+            "method": "DELETE",
+            "body": {},
+            "parameters": [],
+            "headers": [],
+            "authentication": {
+                "type": "bearer",
+                "token": ""
+            },
+            "metaSortKey": -1664936247188.5,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_c5dae8e4bddd46bc8fc08abeff0c7aad",
+            "parentId": "fld_34bf6b91193a4bd481ebf448cc729fef",
+            "modified": 1664936213558,
+            "created": 1664936039198,
+            "url": "http://localhost:8001/api/token/blacklist/",
+            "name": "Logout",
+            "description": "# Logout from user by putting refresh token in blacklist",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [],
+            "authentication": {
+                "type": "bearer"
+            },
+            "metaSortKey": -1664936039198,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_34bf6b91193a4bd481ebf448cc729fef",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664936300931,
+            "created": 1664936175510,
+            "name": "Tokens",
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1664936175510,
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_263d40e716ed484b94957123ed4d651d",
+            "parentId": "fld_34bf6b91193a4bd481ebf448cc729fef",
+            "modified": 1664936339732,
+            "created": 1664747032531,
+            "url": "http://localhost:8001/api/token/",
+            "name": "Token auth",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\t\n\t\"username\": \"admin\",\n\t\"password\": \"admin\"\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json",
+                    "id": "pair_b3dd3aeddba04846b74b27e2d1c8199f"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1664936039173,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_c5f3afd2514a4bfcaae2b65b2c07ee9c",
+            "parentId": "fld_34bf6b91193a4bd481ebf448cc729fef",
+            "modified": 1664936374004,
+            "created": 1664935598464,
+            "url": "http://localhost:8001/api/token/refresh/",
+            "name": "Token Refresh",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2NzM1NDY3MiwiaWF0IjoxNjY0OTM1NDcyLCJqdGkiOiI3MTNiMWNmM2I5OTk0OTYyYWUxYzNmZDFjYmM3ZGIwZCIsInVzZXJfaWQiOiJkNDViYWU4Yi02ZDU5LTQxN2UtODE5Zi1hNzQ0ZjE3NTVmZDMifQ.GtUAwwR5giMQph9qn8DCcC7SR0J1I2buEfzxiMQX0uY\"\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1664936039148,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "env_5e5bae675c268e91dfac0d9414a13fa2fc1b07e1",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664936164069,
+            "created": 1664747032527,
+            "name": "Base Environment",
+            "data": {},
+            "dataPropertyOrder": {},
+            "color": null,
+            "isPrivate": false,
+            "metaSortKey": 1664747032527,
+            "_type": "environment"
+        },
+        {
+            "_id": "jar_5e5bae675c268e91dfac0d9414a13fa2fc1b07e1",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664747437308,
+            "created": 1664747032529,
+            "name": "Default Jar",
+            "cookies": [
+                {
+                    "key": "csrftoken",
+                    "value": "99lo5imqKv3bzVpjGtrbYwXgayS9QR3e",
+                    "expires": "2023-10-01T21:50:37.000Z",
+                    "maxAge": 31449600,
+                    "domain": "localhost",
+                    "path": "/",
+                    "extensions": [
+                        "SameSite=Lax"
+                    ],
+                    "hostOnly": true,
+                    "creation": "2022-10-02T21:50:37.295Z",
+                    "lastAccessed": "2022-10-02T21:50:37.295Z",
+                    "id": "8527067859510133"
+                }
+            ],
+            "_type": "cookie_jar"
+        },
+        {
+            "_id": "spc_da6011fd7e2042a588920a6cf1d633d2",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664936243874,
+            "created": 1664747032516,
+            "fileName": "AntiCafe API",
+            "contents": "",
+            "contentType": "yaml",
+            "_type": "api_spec"
+        },
+        {
+            "_id": "uts_e66c697555ed47a2938ba69d84f0fd52",
+            "parentId": "wrk_4102d20aee174eb1bd9970d2824424f2",
+            "modified": 1664747032532,
+            "created": 1664747032532,
+            "name": "Example Test Suite",
+            "_type": "unit_test_suite"
+        }
+    ]
+}

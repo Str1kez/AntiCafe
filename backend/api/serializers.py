@@ -8,10 +8,11 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
-            email=validated_data['email']
+            email=validated_data.get('email'),
+            alias=validated_data.get('alias')
         )
         return user
     
     class Meta:
         model = User
-        fields = '__all__'
+        fields = 'id', 'username', 'password', 'first_name', 'email', 'avatar', 'phone', 'alias', 'qrcode', 'is_staff'
