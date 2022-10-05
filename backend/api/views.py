@@ -15,7 +15,8 @@ from .serializers import UserSerializer
 
 class UserViewSet(viewsets.GenericViewSet,
                   mixins.ListModelMixin,
-                  mixins.RetrieveModelMixin):
+                  mixins.RetrieveModelMixin,
+                  mixins.CreateModelMixin):
     """
     Simple model view set (testing)
     """
@@ -23,14 +24,20 @@ class UserViewSet(viewsets.GenericViewSet,
     serializer_class = UserSerializer
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Marking Users as inactive instead of deleting
+        """
         instance = self.get_object()
         instance.is_active = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    # TODO: ОПИСАТЬ РЕГУ С РЕДИРЕКТОМ НА ТОКЕН
-    # def create(self, request, *args, **kwargs):
-    #     pass
+    def create(self, request, *args, **kwargs):
+        """
+        Register user -> 201 code
+        """
+        response = super().create(request, *args, **kwargs)
+        return Response(status=response.status_code, headers=response.headers)
 
     def get_permissions(self):
         """
