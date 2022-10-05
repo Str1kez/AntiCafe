@@ -14,5 +14,3 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)  # TODO: дописать и проверить
     phone = models.CharField(max_length=12, null=True, blank=True, verbose_name='Телефон')
     qrcode = models.BinaryField(blank=True, null=True, verbose_name='QRCode')
-
-# Create your models here.

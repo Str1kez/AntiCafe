@@ -13,7 +13,7 @@ class AdminViewSet(viewsets.GenericViewSet,
                    mixins.ListModelMixin,
                    mixins.RetrieveModelMixin):
     """
-    Viewset for cafe admins
+    # Вьюшка для админов кафешки
     """
     queryset = User.objects.filter(is_active=True, is_staff=False)
     # TODO: Нужен новый сериализатор для админа, чтобы не видеть/управлять личной инфой клиентов
@@ -23,7 +23,7 @@ class AdminViewSet(viewsets.GenericViewSet,
 
 class UserViewSet(viewsets.GenericViewSet):
     """
-    Viewset for clients
+    # Вьюшка для авторизированных клиентов
     """
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
@@ -32,7 +32,7 @@ class UserViewSet(viewsets.GenericViewSet):
     @action(detail=False, url_path='client', url_name='user_info')
     def info(self, request, *args, **kwargs):
         """
-        Get user info
+        # Получение инфы о себе
         """
         user = self.get_object()
         serializer = self.get_serializer(user)
@@ -41,9 +41,8 @@ class UserViewSet(viewsets.GenericViewSet):
     @info.mapping.delete
     def delete(self, request, *args, **kwargs):
         """
-        Marking Users as inactive instead of deleting
-        Front must go to /token/blacklist/ endpoint with 'refresh' token in data
-        After that, delete 'access' token from cookie
+        # Удаление пользователя
+        ## Вместо удаления отмечаем их как не активные
         """
         instance = self.get_object()
         instance.is_active = False
@@ -52,6 +51,10 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @info.mapping.patch
     def update_bio(self, request, *args, **kwargs):
+        """
+        # Обновление ***о себе***
+        ## Юзаем `PATCH` запрос, чтобы не удалить пустые поля
+        """
         user = self.get_object()
         serializer = self.get_serializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -65,14 +68,15 @@ class UserViewSet(viewsets.GenericViewSet):
 class RegisterViewSet(viewsets.GenericViewSet,
                       mixins.CreateModelMixin):
     """
-    Simple View for registration
+    # Вьюшка для регистрации
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
         """
-        Register user -> 201 code
+        # Регистрация пользователя
+        ## Необходимы пароль и ник
         """
         response = super().create(request, *args, **kwargs)
         return Response(status=response.status_code, headers=response.headers)
@@ -80,7 +84,9 @@ class RegisterViewSet(viewsets.GenericViewSet,
 
 class CustomTokenBlacklistView(TokenBlacklistView):
     """
-    Need to be authenticated for logout
+    # Need to be authenticated for logout
+    Front must go to endpoint with `'refresh'` token in data
+    After that, delete `'access'` token from cookie
     """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

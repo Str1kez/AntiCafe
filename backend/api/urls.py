@@ -10,7 +10,6 @@ router.register('admin', AdminViewSet)
 router.register('register', RegisterViewSet)
 
 
-# TODO: СДЕЛАТЬ НЕ ТОЛЬКО POST ДЛЯ РЕГИСТРАЦИИ
 urlpatterns = [
     path('users/', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
