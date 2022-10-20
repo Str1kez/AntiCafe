@@ -4,7 +4,7 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    alias = serializers.CharField(source='first_name', required=False)
+    fullname = serializers.CharField(source='first_name', required=False)
 
     def create(self, validated_data) -> User:
         user = User.objects.create_user(
@@ -24,4 +24,4 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = 'id', 'username', 'password', 'alias', 'email', 'avatar', 'phone', 'qrcode', 'is_staff'
+        fields = 'id', 'username', 'password', 'fullname', 'email', 'avatar', 'phone', 'qrcode', 'is_staff'

@@ -1,0 +1,27 @@
+services:
+  backend:
+    image: str1kez/anticafe_backend
+    build: .
+    container_name: backend
+    command: sh -c "python3 manage.py makemigrations api; python3 manage.py migrate; python3 manage.py collectstatic --noinput; python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email lol@lol.ru; python3 manage.py runserver 0.0.0.0:8001"
+    ports:
+      - 8001:8001
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    container_name: backend_db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    env_file:
+      - .env
+    ports:
+      - 5433:5432
