@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             password=validated_data['password'],
             email=validated_data.get('email'),
-            first_name=validated_data.get('first_name')
+            first_name=validated_data.get('first_name'),
         )
         return user
 
@@ -21,7 +21,17 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data['password'])
         instance.save()
         return instance
-    
+
     class Meta:
         model = User
-        fields = 'id', 'username', 'password', 'fullname', 'email', 'avatar', 'phone', 'qrcode', 'is_staff'
+        fields = (
+            'id',
+            'username',
+            'password',
+            'fullname',
+            'email',
+            'avatar',
+            'phone',
+            'qrcode',
+            'is_staff',
+        )

@@ -9,12 +9,13 @@ from .models import User
 from .serializers import UserSerializer
 
 
-class AdminViewSet(viewsets.GenericViewSet,
-                   mixins.ListModelMixin,
-                   mixins.RetrieveModelMixin):
+class AdminViewSet(
+    viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin
+):
     """
     # Вьюшка для админов кафешки
     """
+
     queryset = User.objects.filter(is_active=True, is_staff=False)
     # TODO: Нужен новый сериализатор для админа, чтобы не видеть/управлять личной инфой клиентов
     serializer_class = UserSerializer
@@ -25,6 +26,7 @@ class UserViewSet(viewsets.GenericViewSet):
     """
     # Вьюшка для авторизированных клиентов
     """
+
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -65,11 +67,11 @@ class UserViewSet(viewsets.GenericViewSet):
         return self.request.user
 
 
-class RegisterViewSet(viewsets.GenericViewSet,
-                      mixins.CreateModelMixin):
+class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """
     # Вьюшка для регистрации
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -88,5 +90,6 @@ class CustomTokenBlacklistView(TokenBlacklistView):
     Front must go to endpoint with `'refresh'` token in data
     After that, delete `'access'` token from cookie
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

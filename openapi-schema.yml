@@ -228,10 +228,11 @@ components:
             \u0444\u0440\u044B \u0438 \u0441\u0438\u043C\u0432\u043E\u043B\u044B @/./+/-/_."
           pattern: ^[\w.@+-]+\z
           maxLength: 150
+          unique: true
         password:
           type: string
           maxLength: 128
-        alias:
+        fullname:
           type: string
         email:
           type: string
