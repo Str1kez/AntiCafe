@@ -1,3 +1,5 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
 from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -6,12 +8,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenBlacklistView
 
 from .models import User
+from .schema.responses import INVALID_TOKEN_401, NOT_FOUND_404, EMPTY_TOKEN_401, USER_EXISTS_400, NO_PERMISSION_403
 from .serializers import UserSerializer
 
 
-class AdminViewSet(
-    viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin
-):
+class AdminViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     """
     # Вьюшка для админов кафешки
     """
@@ -20,6 +21,58 @@ class AdminViewSet(
     # TODO: Нужен новый сериализатор для админа, чтобы не видеть/управлять личной инфой клиентов
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        tags=['Admin'],
+        operation_id='Client List',
+        responses={
+            200: UserSerializer(many=True),
+            401: OpenApiTypes.OBJECT,
+            403: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+            NO_PERMISSION_403,
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        """
+        # Получение списка клиентов
+        """
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Admin'],
+        operation_id='Client Retrieve',
+        parameters=[
+            OpenApiParameter(
+                'id',
+                OpenApiTypes.UUID,
+                'path',
+                required=True,
+                description='ID Клиента',
+                examples=[OpenApiExample('id_example', '3fa85f64-5717-4562-b3fc-2c963f66afa6')],
+            )
+        ],
+        responses={
+            200: UserSerializer,
+            401: OpenApiTypes.OBJECT,
+            403: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+            NO_PERMISSION_403,
+            NOT_FOUND_404,
+        ],
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """
+        # Получение инфы об определенном клиенте
+        """
+        return super().retrieve(request, *args, **kwargs)
 
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -31,6 +84,18 @@ class UserViewSet(viewsets.GenericViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Client'],
+        operation_id='Client Info',
+        responses={
+            200: UserSerializer,
+            401: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+        ],
+    )
     @action(detail=False, url_path='client', url_name='user_info')
     def info(self, request, *args, **kwargs):
         """
@@ -40,6 +105,18 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
+    @extend_schema(
+        tags=['Client'],
+        operation_id='Client',
+        responses={
+            204: None,
+            401: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+        ],
+    )
     @info.mapping.delete
     def delete(self, request, *args, **kwargs):
         """
@@ -51,6 +128,20 @@ class UserViewSet(viewsets.GenericViewSet):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @extend_schema(
+        tags=['Client'],
+        operation_id='Client Bio',
+        responses={
+            200: UserSerializer,
+            400: OpenApiTypes.OBJECT,
+            401: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            USER_EXISTS_400,
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+        ],
+    )
     @info.mapping.patch
     def update_bio(self, request, *args, **kwargs):
         """
@@ -75,10 +166,20 @@ class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    @extend_schema(
+        operation_id='User',
+        auth=[],
+        responses={
+            200: UserSerializer,
+            400: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            USER_EXISTS_400,
+        ],
+    )
     def create(self, request, *args, **kwargs):
         """
         # Регистрация пользователя
-        ## Необходимы пароль и ник
         """
         response = super().create(request, *args, **kwargs)
         return Response(status=response.status_code, headers=response.headers)

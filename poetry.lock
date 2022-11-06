@@ -10,6 +10,20 @@ python-versions = ">=3.7"
 tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 
 [[package]]
+name = "attrs"
+version = "22.1.0"
+description = "Classes Without Boilerplate"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
+tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
+tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
+
+[[package]]
 name = "cffi"
 version = "1.15.1"
 description = "Foreign Function Interface for Python calling C code."
@@ -113,6 +127,26 @@ python-jose = ["python-jose (==3.3.0)"]
 test = ["cryptography", "pytest", "pytest-cov", "pytest-django", "pytest-xdist", "tox"]
 
 [[package]]
+name = "drf-spectacular"
+version = "0.24.2"
+description = "Sane and flexible OpenAPI 3 schema generation for Django REST framework"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+Django = ">=2.2"
+djangorestframework = ">=3.10"
+inflection = ">=0.3.1"
+jsonschema = ">=2.6.0"
+PyYAML = ">=5.1"
+uritemplate = ">=2.0.0"
+
+[package.extras]
+offline = ["drf-spectacular-sidecar"]
+sidecar = ["drf-spectacular-sidecar"]
+
+[[package]]
 name = "environs"
 version = "9.5.0"
 description = "simplified environment variable parsing"
@@ -129,6 +163,30 @@ dev = ["dj-database-url", "dj-email-url", "django-cache-url", "flake8 (==4.0.1)"
 django = ["dj-database-url", "dj-email-url", "django-cache-url"]
 lint = ["flake8 (==4.0.1)", "flake8-bugbear (==21.9.2)", "mypy (==0.910)", "pre-commit (>=2.4,<3.0)"]
 tests = ["dj-database-url", "dj-email-url", "django-cache-url", "pytest"]
+
+[[package]]
+name = "inflection"
+version = "0.5.1"
+description = "A port of Ruby on Rails inflector to Python"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "jsonschema"
+version = "4.17.0"
+description = "An implementation of JSON Schema validation for Python"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+attrs = ">=17.4.0"
+pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
+
+[package.extras]
+format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
+format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
 
 [[package]]
 name = "marshmallow"
@@ -212,6 +270,14 @@ python-versions = ">=3.6.8"
 diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
+name = "pyrsistent"
+version = "0.19.2"
+description = "Persistent/Functional/Immutable data structures"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "python-dotenv"
 version = "0.21.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -265,12 +331,16 @@ python-versions = ">=3.6"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6b9fdfca5701652d6c2b4a0913096419f297518e97126050c5b1750efb569431"
+content-hash = "a9a3466d9aef0a014999308c20e9f23742c79fff4ab225c327ff8be35c2bf3d0"
 
 [metadata.files]
 asgiref = [
     {file = "asgiref-3.5.2-py3-none-any.whl", hash = "sha256:1d2880b792ae8757289136f1db2b7b99100ce959b2aa57fd69dab783d05afac4"},
     {file = "asgiref-3.5.2.tar.gz", hash = "sha256:4a29362a6acebe09bf1d6640db38c1dc3d9217c68e6f9f6204d72667fc19a424"},
+]
+attrs = [
+    {file = "attrs-22.1.0-py2.py3-none-any.whl", hash = "sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c"},
+    {file = "attrs-22.1.0.tar.gz", hash = "sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
@@ -386,9 +456,21 @@ djangorestframework-simplejwt = [
     {file = "djangorestframework_simplejwt-5.2.1-py3-none-any.whl", hash = "sha256:1965246979f521c24a3be81d305c3df40bb564e136823868aebc1a1b16e51b8c"},
     {file = "djangorestframework_simplejwt-5.2.1.tar.gz", hash = "sha256:7613874c322a3f6e330cc118f9f00a3db957fea7f8e3bed81ba451853cd1dbd5"},
 ]
+drf-spectacular = [
+    {file = "drf-spectacular-0.24.2.tar.gz", hash = "sha256:be32417594080a52f996afd83fd47ea9c2b83cbf13f6d3fbf3de809a0dfa7ead"},
+    {file = "drf_spectacular-0.24.2-py3-none-any.whl", hash = "sha256:b276e6f7bda6dfb911e742dab87c6e97bc67da2dafe82d6fd8df7cec6c8b03ec"},
+]
 environs = [
     {file = "environs-9.5.0-py2.py3-none-any.whl", hash = "sha256:1e549569a3de49c05f856f40bce86979e7d5ffbbc4398e7f338574c220189124"},
     {file = "environs-9.5.0.tar.gz", hash = "sha256:a76307b36fbe856bdca7ee9161e6c466fd7fcffc297109a118c59b54e27e30c9"},
+]
+inflection = [
+    {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
+    {file = "inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417"},
+]
+jsonschema = [
+    {file = "jsonschema-4.17.0-py3-none-any.whl", hash = "sha256:f660066c3966db7d6daeaea8a75e0b68237a48e51cf49882087757bb59916248"},
+    {file = "jsonschema-4.17.0.tar.gz", hash = "sha256:5bfcf2bca16a087ade17e02b282d34af7ccd749ef76241e7f9bd7c0cb8a9424d"},
 ]
 marshmallow = [
     {file = "marshmallow-3.18.0-py3-none-any.whl", hash = "sha256:35e02a3a06899c9119b785c12a22f4cda361745d66a71ab691fd7610202ae104"},
@@ -482,6 +564,30 @@ PyJWT = [
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
+]
+pyrsistent = [
+    {file = "pyrsistent-0.19.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d6982b5a0237e1b7d876b60265564648a69b14017f3b5f908c5be2de3f9abb7a"},
+    {file = "pyrsistent-0.19.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:187d5730b0507d9285a96fca9716310d572e5464cadd19f22b63a6976254d77a"},
+    {file = "pyrsistent-0.19.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:055ab45d5911d7cae397dc418808d8802fb95262751872c841c170b0dbf51eed"},
+    {file = "pyrsistent-0.19.2-cp310-cp310-win32.whl", hash = "sha256:456cb30ca8bff00596519f2c53e42c245c09e1a4543945703acd4312949bfd41"},
+    {file = "pyrsistent-0.19.2-cp310-cp310-win_amd64.whl", hash = "sha256:b39725209e06759217d1ac5fcdb510e98670af9e37223985f330b611f62e7425"},
+    {file = "pyrsistent-0.19.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:2aede922a488861de0ad00c7630a6e2d57e8023e4be72d9d7147a9fcd2d30712"},
+    {file = "pyrsistent-0.19.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:879b4c2f4d41585c42df4d7654ddffff1239dc4065bc88b745f0341828b83e78"},
+    {file = "pyrsistent-0.19.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c43bec251bbd10e3cb58ced80609c5c1eb238da9ca78b964aea410fb820d00d6"},
+    {file = "pyrsistent-0.19.2-cp37-cp37m-win32.whl", hash = "sha256:d690b18ac4b3e3cab73b0b7aa7dbe65978a172ff94970ff98d82f2031f8971c2"},
+    {file = "pyrsistent-0.19.2-cp37-cp37m-win_amd64.whl", hash = "sha256:3ba4134a3ff0fc7ad225b6b457d1309f4698108fb6b35532d015dca8f5abed73"},
+    {file = "pyrsistent-0.19.2-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:a178209e2df710e3f142cbd05313ba0c5ebed0a55d78d9945ac7a4e09d923308"},
+    {file = "pyrsistent-0.19.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e371b844cec09d8dc424d940e54bba8f67a03ebea20ff7b7b0d56f526c71d584"},
+    {file = "pyrsistent-0.19.2-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:111156137b2e71f3a9936baf27cb322e8024dac3dc54ec7fb9f0bcf3249e68bb"},
+    {file = "pyrsistent-0.19.2-cp38-cp38-win32.whl", hash = "sha256:e5d8f84d81e3729c3b506657dddfe46e8ba9c330bf1858ee33108f8bb2adb38a"},
+    {file = "pyrsistent-0.19.2-cp38-cp38-win_amd64.whl", hash = "sha256:9cd3e9978d12b5d99cbdc727a3022da0430ad007dacf33d0bf554b96427f33ab"},
+    {file = "pyrsistent-0.19.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:f1258f4e6c42ad0b20f9cfcc3ada5bd6b83374516cd01c0960e3cb75fdca6770"},
+    {file = "pyrsistent-0.19.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:21455e2b16000440e896ab99e8304617151981ed40c29e9507ef1c2e4314ee95"},
+    {file = "pyrsistent-0.19.2-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bfd880614c6237243ff53a0539f1cb26987a6dc8ac6e66e0c5a40617296a045e"},
+    {file = "pyrsistent-0.19.2-cp39-cp39-win32.whl", hash = "sha256:71d332b0320642b3261e9fee47ab9e65872c2bd90260e5d225dabeed93cbd42b"},
+    {file = "pyrsistent-0.19.2-cp39-cp39-win_amd64.whl", hash = "sha256:dec3eac7549869365fe263831f576c8457f6c833937c68542d08fde73457d291"},
+    {file = "pyrsistent-0.19.2-py3-none-any.whl", hash = "sha256:ea6b79a02a28550c98b6ca9c35b9f492beaa54d7c5c9e9949555893c8a9234d0"},
+    {file = "pyrsistent-0.19.2.tar.gz", hash = "sha256:bfa0351be89c9fcbcb8c9879b826f4353be10f58f8a677efab0c017bf7137ec2"},
 ]
 python-dotenv = [
     {file = "python-dotenv-0.21.0.tar.gz", hash = "sha256:b77d08274639e3d34145dfa6c7008e66df0f04b7be7a75fd0d5292c191d79045"},

@@ -4,7 +4,7 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    fullname = serializers.CharField(source='first_name', required=False)
+    fullname = serializers.CharField(source='first_name', required=True)
 
     def create(self, validated_data) -> User:
         user = User.objects.create_user(
@@ -33,5 +33,4 @@ class UserSerializer(serializers.ModelSerializer):
             'avatar',
             'phone',
             'qrcode',
-            'is_staff',
         )

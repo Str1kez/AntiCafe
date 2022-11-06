@@ -11,10 +11,6 @@ def user_directory_path(instance, filename):
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    avatar = models.ImageField(
-        upload_to=user_directory_path, null=True, blank=True
-    )
-    phone = models.CharField(
-        max_length=12, null=True, blank=True, verbose_name='Телефон'
-    )
+    avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
+    phone = models.CharField(max_length=12, null=True, blank=True, verbose_name='Телефон')
     qrcode = models.BinaryField(blank=True, null=True, verbose_name='QRCode')

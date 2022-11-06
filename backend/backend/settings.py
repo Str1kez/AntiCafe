@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'drf_spectacular',
     'rest_framework_simplejwt.token_blacklist',
     'api',
 ]
@@ -61,11 +62,27 @@ SIMPLE_JWT = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'AntiCafe API',
+    'DESCRIPTION': 'AntiCafe API для посетителей и официантов',
+    'VERSION': '0.1.2',
+    'AUTHENTICATION_WHITELIST': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVERS': [{'url': 'http://localhost:8001', 'description': 'host'}],
+    'TAGS': [
+        {'name': 'Admin', 'description': 'Ручки для официанта'},
+        {'name': 'Client', 'description': 'Ручки для посетителя'},
+        {'name': 'token', 'description': 'Ручки для токенов'},
+        {'name': 'users', 'description': 'Общая ручка для регистрации'},
     ],
 }
 

@@ -1,70 +1,101 @@
-openapi: 3.0.2
+openapi: 3.0.3
 info:
-  title: AntiCafe
-  version: 0.1.0
+  title: AntiCafe API
+  version: 0.1.2
+  description: AntiCafe API для посетителей и официантов
 paths:
-  /api/users/client/:
-    get:
-      operationId: infoUser
-      description: "# \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0438\
-        \u043D\u0444\u044B \u043E \u0441\u0435\u0431\u0435"
-      parameters: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-          description: ''
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
       tags:
-      - client
-    patch:
-      operationId: updateBioUser
-      description: "# \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435\
-        \ ***\u043E \u0441\u0435\u0431\u0435***\n## \u042E\u0437\u0430\u0435\u043C\
-        \ `PATCH` \u0437\u0430\u043F\u0440\u043E\u0441, \u0447\u0442\u043E\u0431\u044B\
-        \ \u043D\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u0443\u0441\
-        \u0442\u044B\u0435 \u043F\u043E\u043B\u044F"
-      parameters: []
+      - token
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/TokenObtainPair'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/TokenObtainPair'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/TokenObtainPair'
           description: ''
+  /api/token/blacklist/:
+    post:
+      operationId: token_blacklist_create
+      description: |-
+        # Need to be authenticated for logout
+        Front must go to endpoint with `'refresh'` token in data
+        After that, delete `'access'` token from cookie
       tags:
-      - client
-    delete:
-      operationId: destroyUser
-      description: "# \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\
-        \u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F\n## \u0412\u043C\
-        \u0435\u0441\u0442\u043E \u0443\u0434\u0430\u043B\u0435\u043D\u0438\u044F\
-        \ \u043E\u0442\u043C\u0435\u0447\u0430\u0435\u043C \u0438\u0445 \u043A\u0430\
-        \u043A \u043D\u0435 \u0430\u043A\u0442\u0438\u0432\u043D\u044B\u0435"
-      parameters: []
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+        required: true
+      security:
+      - jwtAuth: []
       responses:
-        '204':
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenBlacklist'
           description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
       tags:
-      - client
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
   /api/users/admin/:
     get:
-      operationId: listUsers
-      description: "# \u0412\u044C\u044E\u0448\u043A\u0430 \u0434\u043B\u044F \u0430\
-        \u0434\u043C\u0438\u043D\u043E\u0432 \u043A\u0430\u0444\u0435\u0448\u043A\u0438"
-      parameters: []
+      operationId: Client List
+      description: '# Получение списка клиентов'
+      tags:
+      - Admin
+      security:
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -74,21 +105,61 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
           description: ''
-      tags:
-      - admin
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                NoPermission:
+                  value:
+                    detail: У вас недостаточно прав для выполнения данного действия.
+                  summary: no_permission
+          description: ''
   /api/users/admin/{id}/:
     get:
-      operationId: retrieveUser
-      description: "# \u0412\u044C\u044E\u0448\u043A\u0430 \u0434\u043B\u044F \u0430\
-        \u0434\u043C\u0438\u043D\u043E\u0432 \u043A\u0430\u0444\u0435\u0448\u043A\u0438"
+      operationId: Client Retrieve
+      description: '# Получение инфы об определенном клиенте'
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: "A UUID string identifying this \u043F\u043E\u043B\u044C\u0437\
-          \u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+      - in: path
+        name: id
         schema:
           type: string
+          format: uuid
+        description: ID Клиента
+        required: true
+        examples:
+          IdExample:
+            value: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            summary: id_example
+      tags:
+      - Admin
+      security:
+      - jwtAuth: []
       responses:
         '200':
           content:
@@ -96,122 +167,309 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                NoPermission:
+                  value:
+                    detail: У вас недостаточно прав для выполнения данного действия.
+                  summary: no_permission
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                UserNotFound:
+                  value:
+                    detail: Страница не найдена.
+                  summary: user_not_found
+                  description: Нет клиента по такому id
+          description: ''
+  /api/users/client/:
+    get:
+      operationId: Client Info
+      description: '# Получение инфы о себе'
       tags:
-      - admin
-  /api/users/register/:
-    post:
-      operationId: createUser
-      description: '# Register User
-
-        ## Required Username and Password'
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/User'
+      - Client
+      security:
+      - jwtAuth: []
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+    patch:
+      operationId: Client Bio
+      description: |-
+        # Обновление ***о себе***
+        ## Юзаем `PATCH` запрос, чтобы не удалить пустые поля
       tags:
-      - registration
-  /api/token/:
-    post:
-      operationId: createTokenObtainPair
-      description: 'Takes a set of user credentials and returns an access and refresh
-        JSON web
-
-        token pair to prove the authentication of those credentials.'
-      parameters: []
+      - Client
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/PatchedUser'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/PatchedUser'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenObtainPair'
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenObtainPair'
+                $ref: '#/components/schemas/User'
           description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                UserExists:
+                  value:
+                    username:
+                    - Пользователь с таким именем уже существует.
+                  summary: user_exists
+                  description: Пользователь с таким **username** уже существует
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+    delete:
+      operationId: Client
+      description: |-
+        # Удаление пользователя
+        ## Вместо удаления отмечаем их как не активные
       tags:
-      - token
-  /api/token/refresh/:
+      - Client
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+  /api/users/register/:
     post:
-      operationId: createTokenRefresh
-      description: 'Takes a refresh type JSON web token and returns an access type
-        JSON web
-
-        token if the refresh token is valid.'
-      parameters: []
+      operationId: User
+      description: '# Регистрация пользователя'
+      tags:
+      - users
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/User'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/User'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenRefresh'
+              $ref: '#/components/schemas/User'
+        required: true
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenRefresh'
+                $ref: '#/components/schemas/User'
           description: ''
-      tags:
-      - token
-  /api/token/blacklist/:
-    post:
-      operationId: createTokenBlacklist
-      description: '# Need to be authenticated for logout
-
-        Front must go to endpoint with `''refresh''` token in data
-
-        After that, delete `''access''` token from cookie'
-      parameters: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenBlacklist'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TokenBlacklist'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/TokenBlacklist'
-      responses:
-        '201':
+        '400':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenBlacklist'
+                type: object
+                additionalProperties: {}
+              examples:
+                UserExists:
+                  value:
+                    username:
+                    - Пользователь с таким именем уже существует.
+                  summary: user_exists
+                  description: Пользователь с таким **username** уже существует
           description: ''
-      tags:
-      - token
 components:
   schemas:
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          title: Имя пользователя
+          description: Обязательное поле. Не более 150 символов. Только буквы, цифры
+            и символы @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          title: Пароль
+          maxLength: 128
+        fullname:
+          type: string
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 254
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+          title: Телефон
+          maxLength: 12
+        qrcode:
+          type: string
+          format: byte
+          readOnly: true
+          nullable: true
+    TokenBlacklist:
+      type: object
+      properties:
+        refresh:
+          type: string
+      required:
+      - refresh
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
     User:
       type: object
       properties:
@@ -221,71 +479,56 @@ components:
           readOnly: true
         username:
           type: string
-          description: "\u041E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\
-            \u043E\u0435 \u043F\u043E\u043B\u0435. \u041D\u0435 \u0431\u043E\u043B\
-            \u0435\u0435 150 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432. \u0422\
-            \u043E\u043B\u044C\u043A\u043E \u0431\u0443\u043A\u0432\u044B, \u0446\u0438\
-            \u0444\u0440\u044B \u0438 \u0441\u0438\u043C\u0432\u043E\u043B\u044B @/./+/-/_."
-          pattern: ^[\w.@+-]+\z
+          title: Имя пользователя
+          description: Обязательное поле. Не более 150 символов. Только буквы, цифры
+            и символы @/./+/-/_.
+          pattern: ^[\w.@+-]+$
           maxLength: 150
-          unique: true
         password:
           type: string
+          title: Пароль
           maxLength: 128
         fullname:
           type: string
         email:
           type: string
           format: email
+          title: Адрес электронной почты
           maxLength: 254
         avatar:
           type: string
-          format: binary
+          format: uri
           nullable: true
         phone:
           type: string
           nullable: true
+          title: Телефон
           maxLength: 12
         qrcode:
           type: string
+          format: byte
           readOnly: true
           nullable: true
-        is_staff:
-          type: boolean
-          description: "\u041E\u0442\u043C\u0435\u0442\u044C\u0442\u0435, \u0435\u0441\
-            \u043B\u0438 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\
-            \u043B\u044C \u043C\u043E\u0436\u0435\u0442 \u0432\u0445\u043E\u0434\u0438\
-            \u0442\u044C \u0432 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\
-            \u0430\u0442\u0438\u0432\u043D\u0443\u044E \u0447\u0430\u0441\u0442\u044C\
-            \ \u0441\u0430\u0439\u0442\u0430."
       required:
-      - username
+      - fullname
+      - id
       - password
-    TokenObtainPair:
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-          writeOnly: true
-      required:
+      - qrcode
       - username
-      - password
-    TokenRefresh:
-      type: object
-      properties:
-        refresh:
-          type: string
-        access:
-          type: string
-          readOnly: true
-      required:
-      - refresh
-    TokenBlacklist:
-      type: object
-      properties:
-        refresh:
-          type: string
-      required:
-      - refresh
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+servers:
+- url: http://localhost:8001
+  description: host
+tags:
+- name: Admin
+  description: Ручки для официанта
+- name: Client
+  description: Ручки для посетителя
+- name: token
+  description: Ручки для токенов
+- name: users
+  description: Общая ручка для регистрации
