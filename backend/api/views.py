@@ -194,3 +194,8 @@ class CustomTokenBlacklistView(TokenBlacklistView):
 
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+
+
+# class QRCodeGenerateViewSet(viewsets.GenericViewSet):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = ...

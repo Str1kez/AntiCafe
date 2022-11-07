@@ -13,4 +13,11 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
     phone = models.CharField(max_length=12, null=True, blank=True, verbose_name='Телефон')
-    qrcode = models.BinaryField(blank=True, null=True, verbose_name='QRCode')
+
+
+class QRCode(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # code = models.BinaryField(blank=False, null=False, verbose_name='QRCode')
+    closed = models.BooleanField(default=False)
+    dt_created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, related_name='qrcode', on_delete=models.CASCADE, blank=True, null=True)

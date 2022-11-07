@@ -12,14 +12,19 @@ from .views import (
     AdminViewSet,
 )
 
-router = routers.DefaultRouter()
-router.register('', UserViewSet, basename='')
-router.register('admin', AdminViewSet)
-router.register('register', RegisterViewSet)
+user_router = routers.DefaultRouter()
+user_router.register('', UserViewSet, basename='')
+user_router.register('admin', AdminViewSet)
+user_router.register('register', RegisterViewSet)
+
+# qrcode_router = routers.DefaultRouter()
+# qrcode_router.register('generate', ...)
+# qrcode_router.register('verify', ...)
 
 
 urlpatterns = [
-    path('users/', include(router.urls)),
+    # path('qrcode/', include(qrcode_router.urls)),
+    path('users/', include(user_router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path(
