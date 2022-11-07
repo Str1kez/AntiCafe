@@ -83,6 +83,7 @@ SPECTACULAR_SETTINGS = {
         {'name': 'Client', 'description': 'Ручки для посетителя'},
         {'name': 'token', 'description': 'Ручки для токенов'},
         {'name': 'users', 'description': 'Общая ручка для регистрации'},
+        {'name': 'qrcode', 'description': 'Ручка для генерации/валидации qr'},
     ],
 }
 

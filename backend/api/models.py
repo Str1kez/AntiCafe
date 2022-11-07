@@ -20,4 +20,4 @@ class QRCode(models.Model):
     # code = models.BinaryField(blank=False, null=False, verbose_name='QRCode')
     closed = models.BooleanField(default=False)
     dt_created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, related_name='qrcode', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, related_name='qrcodes', on_delete=models.CASCADE, blank=True, null=True)

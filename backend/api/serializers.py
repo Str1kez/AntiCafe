@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User
+from .models import QRCode, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,3 +34,18 @@ class UserSerializer(serializers.ModelSerializer):
             'phone',
             'qrcode',
         )
+
+
+class QRCodeGenerationSerializer(serializers.ModelSerializer):
+    data = serializers.CharField(source='id', required=False)
+
+    def create(self, _):
+        return QRCode.objects.create()
+
+    class Meta:
+        model = QRCode
+        fields = (
+            'data',
+            'dt_created',
+        )
+        validators = []
