@@ -1,15 +1,19 @@
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter
-from rest_framework import viewsets, status, mixins
+from drf_spectacular.utils import (OpenApiExample, OpenApiParameter,
+                                   extend_schema)
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenBlacklistView
 
-from .models import User, QRCode
-from .schema.responses import INVALID_TOKEN_401, NOT_FOUND_404, EMPTY_TOKEN_401, USER_EXISTS_400, NO_PERMISSION_403
-from .serializers import UserSerializer, QRCodeGenerationSerializer
+from .models import QRCode, User
+from .schema.responses import (EMPTY_TOKEN_401, INVALID_TOKEN_401,
+                               NO_PERMISSION_403, NOT_FOUND_404,
+                               PAYMENT_REQUIRED_402, USER_EXISTS_400)
+from .serializers import (QRCodeGenerationSerializer, QRCodeScanSerializer,
+                          UserSerializer)
 
 
 class AdminViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -23,7 +27,7 @@ class AdminViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     permission_classes = [IsAdminUser]
 
     @extend_schema(
-        tags=['Admin'],
+        tags=['admin'],
         operation_id='Client List',
         responses={
             200: UserSerializer(many=True),
@@ -43,7 +47,7 @@ class AdminViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         return super().list(request, *args, **kwargs)
 
     @extend_schema(
-        tags=['Admin'],
+        tags=['admin'],
         operation_id='Client Retrieve',
         parameters=[
             OpenApiParameter(
@@ -85,7 +89,7 @@ class UserViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
-        tags=['Client'],
+        tags=['client'],
         operation_id='Client Info',
         responses={
             200: UserSerializer,
@@ -106,7 +110,7 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
     @extend_schema(
-        tags=['Client'],
+        tags=['client'],
         operation_id='Client',
         responses={
             204: None,
@@ -129,7 +133,7 @@ class UserViewSet(viewsets.GenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(
-        tags=['Client'],
+        tags=['client'],
         operation_id='Client Bio',
         responses={
             200: UserSerializer,
@@ -196,22 +200,25 @@ class CustomTokenBlacklistView(TokenBlacklistView):
     authentication_classes = [JWTAuthentication]
 
 
-@extend_schema(
-    operation_id='Generate QRCode',
-    responses={
-        200: QRCodeGenerationSerializer,
-        401: OpenApiTypes.OBJECT,
-    },
-    examples=[
-        INVALID_TOKEN_401,
-        EMPTY_TOKEN_401,
-    ],
-)
 class QRCodeGenerateViewSet(viewsets.GenericViewSet):
     serializer_class = QRCodeGenerationSerializer
     permission_classes = [IsAuthenticated]
     queryset = QRCode.objects.filter(closed=False)
 
+    @extend_schema(
+        operation_id='Generate QRCode',
+        request=None,
+        responses={
+            200: QRCodeGenerationSerializer,
+            401: OpenApiTypes.OBJECT,
+            402: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+            PAYMENT_REQUIRED_402,
+        ],
+    )
     def create(self, request, *args, **kwargs):
         """
         # Генерация QR-кода
@@ -219,12 +226,58 @@ class QRCodeGenerateViewSet(viewsets.GenericViewSet):
         user = self.get_object()
         opened_bill = user.qrcodes.filter(closed=False).exists()
         if opened_bill:
-            return Response({'detail': 'Есть неоплаченный счет'}, status=status.HTTP_402_PAYMENT_REQUIRED, content_type='application/json')
+            return Response(
+                {'detail': 'Есть неоплаченный счет'},
+                status=status.HTTP_402_PAYMENT_REQUIRED,
+                content_type='application/json',
+            )
         serializer = self.get_serializer(data=request.data)
-        serializer.user = user
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(user=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_object(self):
         return self.request.user
+
+
+class QRCodeScanViewSet(viewsets.GenericViewSet):
+    serializer_class = QRCodeScanSerializer
+    permission_classes = [IsAdminUser]
+    queryset = QRCode.objects.filter(closed=False)
+
+    @extend_schema(
+        operation_id='Scan QRCode',
+        request=None,
+        parameters=[
+            OpenApiParameter(
+                'id',
+                OpenApiTypes.UUID,
+                'path',
+                required=True,
+                description='ID QRCode',
+                examples=[OpenApiExample('id_example', '3fa85f64-5717-4562-b3fc-2c963f66afa6')],
+            )
+        ],
+        responses={
+            200: QRCodeScanSerializer,
+            401: OpenApiTypes.OBJECT,
+            403: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+            NO_PERMISSION_403,
+            NOT_FOUND_404,
+        ],
+    )
+    def partial_update(self, request, *args, **kwargs):
+        """
+        # Обновляет код как **оплаченный**
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)

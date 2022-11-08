@@ -4,6 +4,132 @@ info:
   version: 0.1.2
   description: AntiCafe API для посетителей и официантов
 paths:
+  /api/qrcode/generate/:
+    post:
+      operationId: Generate QRCode
+      description: '# Генерация QR-кода'
+      tags:
+      - qrcode
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QRCodeGeneration'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+        '402':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                OpenedBill:
+                  value:
+                    detail: Есть неоплаченный счет
+                  summary: opened_bill
+                  description: В случае получения кода без оплаты предыдущего
+          description: ''
+  /api/qrcode/scan/{id}/:
+    patch:
+      operationId: Scan QRCode
+      description: '# Обновляет код как **оплаченный**'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: ID QRCode
+        required: true
+        examples:
+          IdExample:
+            value: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            summary: id_example
+      tags:
+      - qrcode
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QRCodeScan'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                NoPermission:
+                  value:
+                    detail: У вас недостаточно прав для выполнения данного действия.
+                  summary: no_permission
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                UserNotFound:
+                  value:
+                    detail: Страница не найдена.
+                  summary: user_not_found
+                  description: Нет данных по такому id
+          description: ''
   /api/token/:
     post:
       operationId: token_create
@@ -93,7 +219,7 @@ paths:
       operationId: Client List
       description: '# Получение списка клиентов'
       tags:
-      - Admin
+      - admin
       security:
       - jwtAuth: []
       responses:
@@ -157,7 +283,7 @@ paths:
             value: 3fa85f64-5717-4562-b3fc-2c963f66afa6
             summary: id_example
       tags:
-      - Admin
+      - admin
       security:
       - jwtAuth: []
       responses:
@@ -213,14 +339,14 @@ paths:
                   value:
                     detail: Страница не найдена.
                   summary: user_not_found
-                  description: Нет клиента по такому id
+                  description: Нет данных по такому id
           description: ''
   /api/users/client/:
     get:
       operationId: Client Info
       description: '# Получение инфы о себе'
       tags:
-      - Client
+      - client
       security:
       - jwtAuth: []
       responses:
@@ -259,7 +385,7 @@ paths:
         # Обновление ***о себе***
         ## Юзаем `PATCH` запрос, чтобы не удалить пустые поля
       tags:
-      - Client
+      - client
       requestBody:
         content:
           application/json:
@@ -323,7 +449,7 @@ paths:
         # Удаление пользователя
         ## Вместо удаления отмечаем их как не активные
       tags:
-      - Client
+      - client
       security:
       - jwtAuth: []
       responses:
@@ -427,11 +553,33 @@ components:
           nullable: true
           title: Телефон
           maxLength: 12
-        qrcode:
+    QRCodeGeneration:
+      type: object
+      properties:
+        data:
           type: string
-          format: byte
+        dt_created:
+          type: string
+          format: date-time
           readOnly: true
-          nullable: true
+      required:
+      - dt_created
+    QRCodeScan:
+      type: object
+      properties:
+        data:
+          type: string
+        dt_created:
+          type: string
+          format: date-time
+          readOnly: true
+        dt_payment:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - dt_created
+      - dt_payment
     TokenBlacklist:
       type: object
       properties:
@@ -504,16 +652,10 @@ components:
           nullable: true
           title: Телефон
           maxLength: 12
-        qrcode:
-          type: string
-          format: byte
-          readOnly: true
-          nullable: true
       required:
       - fullname
       - id
       - password
-      - qrcode
       - username
   securitySchemes:
     jwtAuth:
@@ -524,11 +666,13 @@ servers:
 - url: http://localhost:8001
   description: host
 tags:
-- name: Admin
+- name: admin
   description: Ручки для официанта
-- name: Client
+- name: client
   description: Ручки для посетителя
 - name: token
   description: Ручки для токенов
 - name: users
   description: Общая ручка для регистрации
+- name: qrcode
+  description: Ручки для работы с QR

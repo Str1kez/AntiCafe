@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-from datetime import timedelta
 import os.path
+from datetime import timedelta
 from pathlib import Path
 
-from environs import Env
 import dj_database_url
+from environs import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,11 +79,11 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'SERVERS': [{'url': 'http://localhost:8001', 'description': 'host'}],
     'TAGS': [
-        {'name': 'Admin', 'description': 'Ручки для официанта'},
-        {'name': 'Client', 'description': 'Ручки для посетителя'},
+        {'name': 'admin', 'description': 'Ручки для официанта'},
+        {'name': 'client', 'description': 'Ручки для посетителя'},
         {'name': 'token', 'description': 'Ручки для токенов'},
         {'name': 'users', 'description': 'Общая ручка для регистрации'},
-        {'name': 'qrcode', 'description': 'Ручка для генерации/валидации qr'},
+        {'name': 'qrcode', 'description': 'Ручки для работы с QR'},
     ],
 }
 
@@ -150,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 

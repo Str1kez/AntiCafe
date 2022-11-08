@@ -1,17 +1,11 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
 
-from .views import (
-    UserViewSet,
-    RegisterViewSet,
-    CustomTokenBlacklistView,
-    AdminViewSet,
-    QRCodeGenerateViewSet,
-)
+from .views import (AdminViewSet, CustomTokenBlacklistView,
+                    QRCodeGenerateViewSet, QRCodeScanViewSet, RegisterViewSet,
+                    UserViewSet)
 
 user_router = routers.DefaultRouter()
 user_router.register('', UserViewSet, basename='')
@@ -20,7 +14,7 @@ user_router.register('register', RegisterViewSet)
 
 qrcode_router = routers.DefaultRouter()
 qrcode_router.register('generate', QRCodeGenerateViewSet)
-# qrcode_router.register('verify', ...)
+qrcode_router.register('scan', QRCodeScanViewSet)
 
 
 urlpatterns = [

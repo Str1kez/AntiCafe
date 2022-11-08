@@ -1,6 +1,5 @@
 from drf_spectacular.utils import OpenApiExample
 
-
 EMPTY_LIST_200 = OpenApiExample('empty_data', [], description='Нет данных', response_only=True, status_codes=["200"])
 
 USER_EXISTS_400 = OpenApiExample(
@@ -10,14 +9,6 @@ USER_EXISTS_400 = OpenApiExample(
     response_only=True,
     status_codes=['400'],
 )
-
-NO_PERMISSION_403 = OpenApiExample(
-    'no_permission',
-    {"detail": "У вас недостаточно прав для выполнения данного действия."},
-    response_only=True,
-    status_codes=["403"],
-)
-
 
 INVALID_TOKEN_401 = OpenApiExample(
     'invalid_token',
@@ -39,10 +30,25 @@ EMPTY_TOKEN_401 = OpenApiExample(
     status_codes=["401"],
 )
 
+PAYMENT_REQUIRED_402 = OpenApiExample(
+    'opened_bill',
+    {'detail': 'Есть неоплаченный счет'},
+    description='В случае получения кода без оплаты предыдущего',
+    response_only=True,
+    status_codes=['402'],
+)
+
+NO_PERMISSION_403 = OpenApiExample(
+    'no_permission',
+    {"detail": "У вас недостаточно прав для выполнения данного действия."},
+    response_only=True,
+    status_codes=["403"],
+)
+
 NOT_FOUND_404 = OpenApiExample(
     'user_not_found',
     {"detail": "Страница не найдена."},
-    description='Нет клиента по такому id',
+    description='Нет данных по такому id',
     response_only=True,
     status_codes=["404"],
 )

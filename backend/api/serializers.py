@@ -1,3 +1,5 @@
+from typing import Literal
+
 from rest_framework import serializers
 
 from .models import QRCode, User
@@ -32,15 +34,14 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'avatar',
             'phone',
-            'qrcode',
         )
 
 
 class QRCodeGenerationSerializer(serializers.ModelSerializer):
     data = serializers.CharField(source='id', required=False)
 
-    def create(self, _):
-        return QRCode.objects.create()
+    def create(self, kwargs: dict):
+        return QRCode.objects.create(user=kwargs.get('user'))
 
     class Meta:
         model = QRCode
@@ -49,3 +50,17 @@ class QRCodeGenerationSerializer(serializers.ModelSerializer):
             'dt_created',
         )
         validators = []
+
+
+class QRCodeScanSerializer(QRCodeGenerationSerializer):
+    def update(self, instance: QRCode, _):
+        instance.closed = True
+        instance.save()
+        return instance
+
+    class Meta(QRCodeGenerationSerializer.Meta):
+        fields = (
+            'data',
+            'dt_created',
+            'dt_payment',
+        )

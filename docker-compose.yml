@@ -1,6 +1,6 @@
 services:
   backend:
-    image: str1kez/anticafe_backend
+    image: str1kez/anticafe_backend:latest
     build: .
     container_name: backend
     command: sh -c "python3 manage.py makemigrations api; python3 manage.py migrate; python3 manage.py collectstatic --noinput; python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email lol@lol.ru; python3 manage.py runserver 0.0.0.0:8001"
