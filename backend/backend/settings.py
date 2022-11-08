@@ -74,7 +74,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'AntiCafe API',
     'DESCRIPTION': 'AntiCafe API для посетителей и официантов',
-    'VERSION': '0.1.2',
+    'VERSION': '0.2.0',
     'AUTHENTICATION_WHITELIST': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
     'SERVE_INCLUDE_SCHEMA': False,
     'SERVERS': [{'url': 'http://localhost:8001', 'description': 'host'}],

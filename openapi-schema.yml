@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AntiCafe API
-  version: 0.1.2
+  version: 0.2.0
   description: AntiCafe API для посетителей и официантов
 paths:
   /api/qrcode/generate/:
@@ -558,6 +558,7 @@ components:
       properties:
         data:
           type: string
+          format: uuid
         dt_created:
           type: string
           format: date-time
@@ -569,6 +570,7 @@ components:
       properties:
         data:
           type: string
+          format: uuid
         dt_created:
           type: string
           format: date-time

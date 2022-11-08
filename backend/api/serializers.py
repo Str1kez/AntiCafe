@@ -1,5 +1,3 @@
-from typing import Literal
-
 from rest_framework import serializers
 
 from .models import QRCode, User
@@ -38,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class QRCodeGenerationSerializer(serializers.ModelSerializer):
-    data = serializers.CharField(source='id', required=False)
+    data = serializers.UUIDField(source='id', required=False)
 
     def create(self, kwargs: dict):
         return QRCode.objects.create(user=kwargs.get('user'))
