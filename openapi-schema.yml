@@ -535,6 +535,7 @@ components:
           maxLength: 150
         password:
           type: string
+          writeOnly: true
           title: Пароль
           maxLength: 128
         fullname:
@@ -553,6 +554,12 @@ components:
           nullable: true
           title: Телефон
           maxLength: 12
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Статус персонала
+          description: Отметьте, если пользователь может входить в административную
+            часть сайта.
     QRCodeGeneration:
       type: object
       properties:
@@ -636,6 +643,7 @@ components:
           maxLength: 150
         password:
           type: string
+          writeOnly: true
           title: Пароль
           maxLength: 128
         fullname:
@@ -654,9 +662,16 @@ components:
           nullable: true
           title: Телефон
           maxLength: 12
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Статус персонала
+          description: Отметьте, если пользователь может входить в административную
+            часть сайта.
       required:
       - fullname
       - id
+      - is_staff
       - password
       - username
   securitySchemes:

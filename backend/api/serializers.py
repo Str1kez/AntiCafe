@@ -32,7 +32,15 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'avatar',
             'phone',
+            'is_staff',
         )
+        read_only_fields = (
+            'id',
+            'is_staff',
+        )
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
 
 
 class QRCodeGenerationSerializer(serializers.ModelSerializer):
@@ -48,6 +56,10 @@ class QRCodeGenerationSerializer(serializers.ModelSerializer):
             'dt_created',
         )
         validators = []
+        read_only_fields = (
+            'data',
+            'dt_created',
+        )
 
 
 class QRCodeScanSerializer(QRCodeGenerationSerializer):
@@ -58,6 +70,11 @@ class QRCodeScanSerializer(QRCodeGenerationSerializer):
 
     class Meta(QRCodeGenerationSerializer.Meta):
         fields = (
+            'data',
+            'dt_created',
+            'dt_payment',
+        )
+        read_only_fields = (
             'data',
             'dt_created',
             'dt_payment',
