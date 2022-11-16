@@ -13,7 +13,7 @@ user_router.register('admin', AdminViewSet)
 user_router.register('register', RegisterViewSet)
 
 qrcode_router = routers.DefaultRouter()
-qrcode_router.register('generate', QRCodeGenerateViewSet)
+qrcode_router.register('', QRCodeGenerateViewSet)
 qrcode_router.register('scan', QRCodeScanViewSet)
 
 

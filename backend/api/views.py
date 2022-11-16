@@ -236,6 +236,38 @@ class QRCodeGenerateViewSet(viewsets.GenericViewSet):
         serializer.save(user=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(
+        operation_id='Get QRCode',
+        request=None,
+        responses={
+            200: OpenApiTypes.OBJECT,
+            401: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            OpenApiExample(
+                'Correct Response',
+                {"data": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "dt_created": "2022-11-16T22:41:51.715Z"},
+                description='Получение QR-кода',
+                response_only=True,
+                status_codes=["200"],
+            ),
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+            NOT_FOUND_404,
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        """
+        # Получение QR-Кода
+        """
+        user = self.get_object()
+        opened_bill = user.qrcodes.get(closed=False)
+        if not opened_bill:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(opened_bill)
+        return Response(serializer.data)
+
     def get_object(self):
         return self.request.user
 

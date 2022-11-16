@@ -17,7 +17,6 @@ class User(AbstractUser):
 
 class QRCode(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # code = models.BinaryField(blank=False, null=False, verbose_name='QRCode')
     closed = models.BooleanField(default=False)
     dt_created = models.DateTimeField(auto_now_add=True)
     dt_payment = models.DateTimeField(auto_now=True)
