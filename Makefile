@@ -11,7 +11,7 @@ up-build:
 	docker compose up -d --build --remove-orphans
 
 down:
-	docker compose down --rmi "local"; docker volume prune -f
+	docker compose down --rmi "local"
 
 swagger:
 	docker run -p 80:8080 -e SWAGGER_JSON=/schema.yml -v ${PWD}/openapi-schema.yml:/schema.yml:ro -d --name swagger swaggerapi/swagger-ui

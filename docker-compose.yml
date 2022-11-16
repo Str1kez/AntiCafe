@@ -23,7 +23,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    volumes:
+      - 'backend-data:/var/lib/postgresql/data'
     env_file:
       - .env
     ports:
       - 5433:5432
+
+volumes:
+  backend-data:
