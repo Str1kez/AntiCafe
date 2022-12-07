@@ -1,8 +1,11 @@
+from typing import List
+
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (OpenApiExample, OpenApiParameter,
                                    extend_schema)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -90,6 +93,7 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         tags=['client'],
+        request=None,
         operation_id='Client Info',
         responses={
             200: UserSerializer,
@@ -100,8 +104,7 @@ class UserViewSet(viewsets.GenericViewSet):
             EMPTY_TOKEN_401,
         ],
     )
-    @action(detail=False, url_path='client', url_name='user_info')
-    def info(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         """
         # Получение инфы о себе
         """
@@ -111,7 +114,8 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         tags=['client'],
-        operation_id='Client',
+        request=None,
+        operation_id='Client Deletion',
         responses={
             204: None,
             401: OpenApiTypes.OBJECT,
@@ -121,8 +125,7 @@ class UserViewSet(viewsets.GenericViewSet):
             EMPTY_TOKEN_401,
         ],
     )
-    @info.mapping.delete
-    def delete(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         # Удаление пользователя
         ## Вместо удаления отмечаем их как не активные
@@ -134,6 +137,7 @@ class UserViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         tags=['client'],
+        request=UserSerializer,
         operation_id='Client Bio',
         responses={
             200: UserSerializer,
@@ -146,8 +150,7 @@ class UserViewSet(viewsets.GenericViewSet):
             EMPTY_TOKEN_401,
         ],
     )
-    @info.mapping.patch
-    def update_bio(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         """
         # Обновление ***о себе***
         ## Юзаем `PATCH` запрос, чтобы не удалить пустые поля
@@ -158,8 +161,36 @@ class UserViewSet(viewsets.GenericViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        tags=['client'],
+        operation_id='Client History',
+        responses={
+            200: QRCodeScanSerializer(many=True),
+            401: OpenApiTypes.OBJECT,
+        },
+        examples=[
+            INVALID_TOKEN_401,
+            EMPTY_TOKEN_401,
+        ],
+    )
+    @action(detail=False, url_path="history")
+    def visits_history(self, request, *args, **kwargs):
+        """
+        # Получение истории посещений
+        """
+        visits = self.get_visits()
+        serializer = self.get_visits_serializer(visits)
+        return Response(serializer.data)
+
     def get_object(self) -> User:
         return self.request.user
+
+    def get_visits(self) -> List[QRCode]:
+        return self.get_object().qrcodes.filter(closed=True)
+
+    @staticmethod
+    def get_visits_serializer(*args, **kwargs):
+        return QRCodeScanSerializer(*args, **kwargs, many=True)
 
 
 class RegisterViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
@@ -262,9 +293,7 @@ class QRCodeGenerateViewSet(viewsets.GenericViewSet):
         # Получение QR-Кода
         """
         user = self.get_object()
-        opened_bill = user.qrcodes.get(closed=False)
-        if not opened_bill:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        opened_bill = get_object_or_404(user.qrcodes, closed=False)
         serializer = self.get_serializer(opened_bill)
         return Response(serializer.data)
 

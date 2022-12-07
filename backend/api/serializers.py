@@ -1,5 +1,10 @@
+import datetime as dt
+from math import ceil
+
+import pytz
 from rest_framework import serializers
 
+from .config import TARIFF_PER_MINUTE, TARIFF_START
 from .models import QRCode, User
 
 
@@ -65,6 +70,12 @@ class QRCodeGenerationSerializer(serializers.ModelSerializer):
 class QRCodeScanSerializer(QRCodeGenerationSerializer):
     def update(self, instance: QRCode, _):
         instance.closed = True
+        instance.dt_payment = dt.datetime.now(tz=pytz.UTC)
+        instance.cost = TARIFF_START
+        placement_duration = instance.dt_payment - instance.dt_created
+        total_seconds = ceil(placement_duration.total_seconds())
+        total_minutes = total_seconds // 60 + (total_seconds % 60 != 0)
+        instance.cost += TARIFF_PER_MINUTE * total_minutes
         instance.save()
         return instance
 
@@ -73,9 +84,11 @@ class QRCodeScanSerializer(QRCodeGenerationSerializer):
             'data',
             'dt_created',
             'dt_payment',
+            'cost',
         )
         read_only_fields = (
             'data',
             'dt_created',
             'dt_payment',
+            'cost',
         )

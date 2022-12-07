@@ -19,5 +19,6 @@ class QRCode(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     closed = models.BooleanField(default=False)
     dt_created = models.DateTimeField(auto_now_add=True)
-    dt_payment = models.DateTimeField(auto_now=True)
+    dt_payment = models.DateTimeField(null=True, blank=True)
+    cost = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     user = models.ForeignKey(User, related_name='qrcodes', on_delete=models.CASCADE, blank=True, null=True)

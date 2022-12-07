@@ -8,7 +8,7 @@ from .views import (AdminViewSet, CustomTokenBlacklistView,
                     UserViewSet)
 
 user_router = routers.DefaultRouter()
-user_router.register('', UserViewSet, basename='')
+user_router.register('client', UserViewSet)
 user_router.register('admin', AdminViewSet)
 user_router.register('register', RegisterViewSet)
 

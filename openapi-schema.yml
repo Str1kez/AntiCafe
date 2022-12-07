@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AntiCafe API
-  version: 0.2.4
+  version: 0.2.0
   description: AntiCafe API для посетителей и официантов
 paths:
   /api/qrcode/:
@@ -412,7 +412,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
           description: ''
         '401':
           content:
@@ -437,11 +439,20 @@ paths:
                   summary: empty_token
                   description: Без токена
           description: ''
+  /api/users/client/{id}/:
     patch:
       operationId: Client Bio
       description: |-
         # Обновление ***о себе***
         ## Юзаем `PATCH` запрос, чтобы не удалить пустые поля
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this пользователь.
+        required: true
       tags:
       - client
       requestBody:
@@ -502,10 +513,18 @@ paths:
                   description: Без токена
           description: ''
     delete:
-      operationId: Client
+      operationId: Client Deletion
       description: |-
         # Удаление пользователя
         ## Вместо удаления отмечаем их как не активные
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this пользователь.
+        required: true
       tags:
       - client
       security:
@@ -513,6 +532,46 @@ paths:
       responses:
         '204':
           description: No response body
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                InvalidToken:
+                  value:
+                    detail: Given token not valid for any token type
+                    code: token_not_valid
+                    messages:
+                    - token_class: AccessToken
+                      token_type: access
+                      message: Token is invalid or expired
+                  summary: invalid_token
+                  description: Неверный токен
+                EmptyToken:
+                  value:
+                    detail: Учетные данные не были предоставлены.
+                  summary: empty_token
+                  description: Без токена
+          description: ''
+  /api/users/client/history/:
+    get:
+      operationId: Client History
+      description: '# Получение истории посещений'
+      tags:
+      - client
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QRCodeScan'
+          description: ''
         '401':
           content:
             application/json:
@@ -644,7 +703,15 @@ components:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
+        cost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          nullable: true
       required:
+      - cost
       - dt_created
       - dt_payment
     TokenBlacklist:
